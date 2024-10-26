@@ -1,7 +1,3 @@
-from pathlib import Path
-
-import pytest
-
 from airbyte_connector_tester.connector_tests import ConnectorTestSuiteBase
 
 

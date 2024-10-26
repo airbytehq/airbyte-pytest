@@ -1,3 +1,5 @@
+"""Test suite for the connector tester."""
+
 from airbyte_connector_tester import (
     ConnectorTestSuiteBase,
     DestinationTestSuiteBase,
