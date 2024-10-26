@@ -7,7 +7,7 @@ import orjson
 from airbyte_cdk import Connector
 from airbyte_cdk.test import entrypoint_wrapper
 
-from airbyte_connector_tester.test_models import AcceptanceTestInstance
+from airbyte_connector_tester.instances import AcceptanceTestInstance
 
 
 def run_test_job(

@@ -11,11 +11,11 @@ from airbyte_cdk.models import (
 )
 
 from airbyte_connector_tester.connector_tests import ConnectorTestSuiteBase
-from airbyte_connector_tester.job_runner import run_test_job
-from airbyte_connector_tester.test_models import (
+from airbyte_connector_tester.instances import (
     AcceptanceTestInstance,
     get_acceptance_tests,
 )
+from airbyte_connector_tester.job_runner import run_test_job
 
 
 class SourceTestSuiteBase(ConnectorTestSuiteBase):
