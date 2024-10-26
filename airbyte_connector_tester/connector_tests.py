@@ -1,7 +1,9 @@
 import abc
 from pathlib import Path
+from typing import Any
 
 import pytest
+from airbyte_cdk import Connector
 from airbyte_cdk.models import (
     AirbyteMessage,
     Type,
@@ -19,9 +21,23 @@ class ConnectorTestSuiteBase(abc.ABC):
     """Base class for connector test suites."""
 
     acceptance_test_file_path = Path("./acceptance-test-config.json")
+    """The path to the acceptance test config file.
 
-    def test_use_plugin_test(self):
-        assert True, "This is an example test"
+    By default, this is set to the `acceptance-test-config.json` file in
+    the root of the connector source directory.
+    """
+
+    connector_class: type[Connector]
+    """The connector class to test."""
+
+    @abc.abstractmethod
+    def new_connector(self, **kwargs: dict[str, Any]) -> Connector:
+        """Create a new connector instance.
+
+        By default, this returns a new instance of the connector class. Subclasses
+        may override this method to generate a dynamic connector instance.
+        """
+        return self.connector_factory()
 
     @pytest.mark.parametrize(
         "test_input,expected",
@@ -47,8 +63,9 @@ class ConnectorTestSuiteBase(abc.ABC):
         self,
         instance: AcceptanceTestInstance,
     ) -> None:
-        """Run acceptance tests."""
+        """Run `connection` acceptance tests."""
         result: entrypoint_wrapper.EntrypointOutput = run_test_job(
+            self.new_connector(),
             "check",
             test_instance=instance,
         )

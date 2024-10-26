@@ -4,28 +4,31 @@ from pathlib import Path
 from typing import Callable, Literal
 
 import orjson
-from airbyte_cdk.sources import Source
+from airbyte_cdk import Connector
 from airbyte_cdk.test import entrypoint_wrapper
 
 from airbyte_connector_tester.test_models import AcceptanceTestInstance
 
 
 def run_test_job(
+    connector: Connector | type[Connector] | Callable[[], Connector],
     verb: Literal["read", "check", "discover"],
     test_instance: AcceptanceTestInstance,
-    catalog: dict | None = None,
     *,
-    source: Source | type[Source] | Callable[[], Source] | None = None,
+    catalog: dict | None = None,
 ) -> entrypoint_wrapper.EntrypointOutput:
     """Run a test job from provided CLI args and return the result."""
-    source_obj: Source
-    if isinstance(source, type):
-        source_obj = source()
-    elif isinstance(source, Source):
-        source_obj = source
-    elif isinstance(source, Callable):
+    if not connector:
+        raise ValueError("Connector is required")
+
+    connector_obj: Connector
+    if isinstance(connector, type):
+        connector_obj = connector()
+    elif isinstance(connector, Connector):
+        connector_obj = connector
+    elif isinstance(connector, Callable):
         try:
-            source_obj = source()
+            connector_obj = connector()
         except Exception as ex:
             if not test_instance.expect_exception:
                 raise
@@ -35,7 +38,7 @@ def run_test_job(
                 uncaught_exception=ex,
             )
     else:
-        raise ValueError(f"Invalid source type: {type(source)}")
+        raise ValueError(f"Invalid source type: {type(connector)}")
 
     args = [verb]
     if test_instance.config_path:
@@ -62,7 +65,7 @@ def run_test_job(
     # Because it *also* can fail, we have ot redundantly wrap it in a try/except block.
 
     result: entrypoint_wrapper.EntrypointOutput = entrypoint_wrapper._run_command(  # noqa: SLF001  # Non-public API
-        source=source_obj,
+        source=connector_obj,
         args=args,
         expecting_exception=test_instance.expect_exception,
     )

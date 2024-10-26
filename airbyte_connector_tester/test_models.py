@@ -56,6 +56,15 @@ def get_acceptance_tests(
     accept_test_config_path: Path = ACCEPTANCE_TEST_CONFIG_PATH,
 ) -> list[AcceptanceTestInstance]:
     all_tests_config = yaml.safe_load(accept_test_config_path.read_text())
+    if "acceptance_tests" not in all_tests_config:
+        raise ValueError(
+            f"Acceptance tests config not found in {accept_test_config_path}"
+        )
+    if category not in all_tests_config["acceptance_tests"]:
+        return []
+    if "tests" not in all_tests_config["acceptance_tests"][category]:
+        raise ValueError(f"No tests found for category {category}")
+
     return [
         AcceptanceTestInstance.model_validate(test)
         for test in all_tests_config["acceptance_tests"][category]["tests"]

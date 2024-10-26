@@ -29,11 +29,12 @@ class SourceTestSuiteBase(ConnectorTestSuiteBase):
         ids=lambda instance: instance.instance_name,
     )
     def test_full_refresh(
-        cls,
+        self,
         instance: AcceptanceTestInstance,
     ) -> None:
         """Run acceptance tests."""
         result = run_test_job(
+            self.new_connector(),
             "read",
             test_instance=instance,
         )
@@ -51,6 +52,7 @@ class SourceTestSuiteBase(ConnectorTestSuiteBase):
     ) -> None:
         """Run acceptance tests."""
         discover_result = run_test_job(
+            self.new_connector(),
             "discover",
             test_instance=instance,
         )
@@ -66,6 +68,7 @@ class SourceTestSuiteBase(ConnectorTestSuiteBase):
             ]
         )
         result = run_test_job(
+            self.new_connector(),
             "read",
             test_instance=instance,
             catalog=configured_catalog,
@@ -106,6 +109,7 @@ class SourceTestSuiteBase(ConnectorTestSuiteBase):
         # Set expected status to "failed" to ensure the test fails if the connector.
         instance.status = "failed"
         result = run_test_job(
+            self.new_connector(),
             "read",
             test_instance=instance,
             catalog=asdict(invalid_configured_catalog),
@@ -124,6 +128,7 @@ class SourceTestSuiteBase(ConnectorTestSuiteBase):
     ) -> None:
         """Run acceptance tests."""
         run_test_job(
+            self.new_connector(),
             "check",
             test_instance=instance,
         )
