@@ -16,7 +16,10 @@ pytest-cov = "^5.0.0"
 pluggy = "^1.5.0"
 importlib-metadata = "^8.5.0"
 typing-extensions = "^4.12.2"
-airbyte-cdk = "^5.16.0"
+
+# No max version specified, in order to work with connectors on future CDK versions.
+# We'll try to keep breaking changes out of the test functions.
+airbyte-cdk = ">=5.16.0"
 
 [tool.poetry.plugins.pytest11]
 airbyte-connector-tester = "airbyte_connector_tester.plugin"
